@@ -3,11 +3,19 @@
 #include <iostream>
 #include "PIDController.h"
 #include <thread>
+#include "bezier.h"
+#define ISPID  0
 
 POINT ball_pos;
 POINT mouse_pos;
+
+#if ISPID
 PIDController pidContorl;
 PIDController pidContorl2;
+#else
+bezier pidContorl;
+bezier pidContorl2;
+#endif
 bool is_run = false;
 
 void mouse_abs_move(int x, int y)
@@ -23,16 +31,27 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
       ball_pos.x = 0;
       ball_pos.y = 0;
 
+#if ISPID
       pidContorl.setProportion(0.5f);
       pidContorl.setIntegral(0.3f);
       pidContorl.setDifferential(0.2f);
-      pidContorl.setTarget(100);
 
+#else
+      pidContorl.setTarget(100);
+      pidContorl.setMethod(3);
+
+#endif
+
+#if ISPID
       pidContorl2.setProportion(0.5f);
       pidContorl2.setIntegral(0.3f);
       pidContorl2.setDifferential(0.2f);
-      pidContorl2.setTarget(100);
 
+#else
+      pidContorl2.setTarget(100);
+      pidContorl2.setMethod(3);
+
+#endif
       mouse_pos.x = 100;
       mouse_pos.y = 100;
       std::thread([hwnd]() {
